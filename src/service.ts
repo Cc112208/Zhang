@@ -1018,6 +1018,50 @@ export class MemorySeaService {
     return payload
   }
 
+  /**
+   * Permanently remove every memory artifact belonging to one scope.
+   * This is intentionally a service-level operation so callers cannot accidentally
+   * delete another project's data by omitting the scope boundary.
+   */
+  purgeScope(scopeId: string): { scopeId: string; deleted: number } {
+    const id = scopeId.trim()
+    if (id.length === 0) throw new StorageError('purgeScope 需要非空 scopeId')
+    let deleted = 0
+    this.db.transaction(() => {
+      const count = (table: string, where: string, ...params: (string | number)[]) => {
+        const exists = this.db.get<{ name: string }>(
+          "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name = ?",
+          table,
+        )
+        if (!exists) return
+        deleted += this.db.run(`DELETE FROM ${table} WHERE ${where}`, ...params).changes
+      }
+      // Derived records first; evidence and relations reference these ids.
+      count('skill_outcome_evidence', 'scope_id = ?', id)
+      count('skill_attempts', 'scope_id = ?', id)
+      count('skill_candidate_versions', 'scope_id = ?', id)
+      count('skill_candidates', 'scope_id = ?', id)
+      count('pattern_evidence', 'pattern_id IN (SELECT id FROM patterns WHERE scope_id = ?)', id)
+      count('patterns_fts', 'rowid IN (SELECT rowid FROM patterns WHERE scope_id = ?)', id)
+      count('patterns', 'scope_id = ?', id)
+      count('memory_evidence', 'memory_id IN (SELECT id FROM memories WHERE scope_id = ?)', id)
+      count('memory_relations', 'from_memory_id IN (SELECT id FROM memories WHERE scope_id = ?) OR to_memory_id IN (SELECT id FROM memories WHERE scope_id = ?)', id, id)
+      count('memories_fts', 'rowid IN (SELECT rowid FROM memories WHERE scope_id = ?)', id)
+      count('embeddings_v2', 'scope_id = ?', id)
+      count('embeddings', "owner_id IN (SELECT id FROM experiences WHERE scope_id = ?) OR owner_id IN (SELECT id FROM episodes WHERE scope_id = ?)", id, id)
+      count('memories', 'scope_id = ?', id)
+      count('episode_relations', 'scope_id = ?', id)
+      count('memory_jobs', 'scope_id = ?', id)
+      count('episode_experiences', 'episode_id IN (SELECT id FROM episodes WHERE scope_id = ?) OR experience_id IN (SELECT id FROM experiences WHERE scope_id = ?)', id, id)
+      count('experience_fts', 'rowid IN (SELECT rowid FROM experiences WHERE scope_id = ?)', id)
+      count('episode_fts', 'rowid IN (SELECT rowid FROM episodes WHERE scope_id = ?)', id)
+      count('experiences', 'scope_id = ?', id)
+      count('episodes', 'scope_id = ?', id)
+    })
+    this.contexts.delete(id)
+    return { scopeId: id, deleted }
+  }
+
   getConfig(): MemorySeaConfig {
     return this.config
   }
