@@ -16,6 +16,7 @@ import type {
   MemoryKind,
 } from '../types.js'
 import { MEMORY_KINDS } from '../types.js'
+import { redactSensitiveText } from '../util/redaction.js'
 
 const DEFAULT_TIMEOUT_MS = 20_000
 const MAX_PROMPT_CHARS = 8000
@@ -115,17 +116,17 @@ export class LlmMemoryConsolidator implements MemoryConsolidator {
 export function buildPrompt(context: ConsolidationContext): string {
   const lines: string[] = []
   lines.push(`scope: ${context.scopeId}`)
-  lines.push(`episode: ${context.episode.id} | title=${context.episode.title ?? '(无)'}`)
-  lines.push(`summary: ${context.episode.summary ?? '(无)'}`)
+  lines.push(`episode: ${context.episode.id} | title=${redactSensitiveText(context.episode.title ?? '(无)')}`)
+  lines.push(`summary: ${redactSensitiveText(context.episode.summary ?? '(无)')}`)
   if (context.episode.topics.length > 0) lines.push(`topics: ${context.episode.topics.join(', ')}`)
   lines.push('relatedEpisodes:')
   for (const related of context.relatedEpisodes) {
-    lines.push(`- ${related.id} | ${related.title ?? '(无)'} | ${truncate(related.summary ?? '', 200)}`)
+    lines.push(`- ${related.id} | ${redactSensitiveText(related.title ?? '(无)')} | ${redactSensitiveText(truncate(related.summary ?? '', 200))}`)
   }
   lines.push('existingMemories:')
   for (const memory of context.relatedMemories) {
     lines.push(
-      `- ${memory.id} | kind=${memory.kind} | confidence=${memory.confidence} | content=${truncate(memory.content, 200)}`,
+      `- ${memory.id} | kind=${memory.kind} | confidence=${memory.confidence} | content=${redactSensitiveText(truncate(memory.content, 200))}`,
     )
   }
   return lines.join(NEWLINE).slice(0, MAX_PROMPT_CHARS)

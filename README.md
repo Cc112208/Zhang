@@ -84,6 +84,10 @@ npm run build
 
 ## 配置
 
+### 远端模型的数据边界
+
+本地 Experience 原文仍保持可追溯；当启用远端摘要、整理或 Embedding 时，发送到 provider 的文本会先对常见 API key、Bearer token、password/secret/token/api-key 字段和 URL 路径做脱敏。该保护覆盖模型请求，不代表数据库加密或完整的个人信息匿名化；生产部署仍应优先使用本地模型或可信的私有端点，并设置数据库文件访问权限。
+
 默认数据库：`$DSH_HOME/3d-memory-sea/memory-sea.db`（`DSH_MEMORY_SEA_DB` 可覆盖）。
 
 ```yaml

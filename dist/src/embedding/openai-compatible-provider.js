@@ -17,6 +17,7 @@
  *     会让 cosine 静默失效，宁可让 job 失败重试。
  */
 import { errorMessage } from '../errors.js';
+import { redactSensitiveText } from '../util/redaction.js';
 /** 默认超时：embedding 是后台可重试任务，15s 足够覆盖冷启动。 */
 export const DEFAULT_EMBEDDING_TIMEOUT_MS = 15_000;
 /** 允许的最短/最长超时，避免配置写错把后台任务拖死或瞬间超时。 */
@@ -76,7 +77,9 @@ export class OpenAiCompatibleEmbeddingProvider {
     async embedBatch(texts) {
         if (texts.length === 0)
             return [];
-        const payload = await this.#request(texts);
+        // Keep the local evidence intact, but never send obvious credentials to a remote provider.
+        const safeTexts = texts.map((text) => redactSensitiveText(text));
+        const payload = await this.#request(safeTexts);
         return this.#parse(payload, texts.length);
     }
     // ---------------------------------------------------------------- 内部

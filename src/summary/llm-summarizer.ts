@@ -12,6 +12,7 @@
 
 import type { Episode, EpisodeSummarizer, EpisodeSummaryResult, Experience } from '../types.js'
 import { cleanText, uniqueStrings } from '../util/text.js'
+import { redactSensitiveText } from '../util/redaction.js'
 
 /** 发给模型的原文上限：太长会让本地小模型超上下文，也太贵。 */
 const MAX_PROMPT_CHARS = 6000
@@ -119,12 +120,12 @@ function buildUserPrompt(episode: Episode, experiences: readonly Experience[]): 
   const lines: string[] = []
   for (const experience of experiences) {
     if (typeof experience?.content !== 'string') continue
-    const content = cleanText(experience.content)
+    const content = redactSensitiveText(cleanText(experience.content))
     if (content.length === 0) continue
     lines.push(`- [${experience.sourceType}] ${content}`)
   }
   const body = lines.join('\n').slice(0, MAX_PROMPT_CHARS)
-  const title = typeof episode?.title === 'string' ? episode.title.trim() : ''
+  const title = typeof episode?.title === 'string' ? redactSensitiveText(episode.title.trim()) : ''
   return `Episode 标题：${title.length > 0 ? title : '(无)'}\n经历原文：\n${body}`
 }
 

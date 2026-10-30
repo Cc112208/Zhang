@@ -19,6 +19,7 @@
 
 import type { EmbeddingProvider } from '../types.js'
 import { errorMessage } from '../errors.js'
+import { redactSensitiveText } from '../util/redaction.js'
 
 /** 默认超时：embedding 是后台可重试任务，15s 足够覆盖冷启动。 */
 export const DEFAULT_EMBEDDING_TIMEOUT_MS = 15_000
@@ -103,7 +104,9 @@ export class OpenAiCompatibleEmbeddingProvider implements EmbeddingProvider {
   async embedBatch(texts: string[]): Promise<Float32Array[]> {
     if (texts.length === 0) return []
 
-    const payload = await this.#request(texts)
+    // Keep the local evidence intact, but never send obvious credentials to a remote provider.
+    const safeTexts = texts.map((text) => redactSensitiveText(text))
+    const payload = await this.#request(safeTexts)
     return this.#parse(payload, texts.length)
   }
 
