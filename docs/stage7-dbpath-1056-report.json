@@ -1,0 +1,22 @@
+[
+  {
+    "file": "page.png",
+    "state": null,
+    "size": "1056x794",
+    "zoom": 1,
+    "animationWaitMs": 45,
+    "issues": [],
+    "lint": [
+      {
+        "rule": "smallText",
+        "label": "正文小于 13px",
+        "count": 3,
+        "examples": [
+          "p.settings-hint「不勾选 = 显示全部；这里只过滤视图，不会合并或」（10.5px）",
+          "p#hint-static.settings-hint「拖动旋转 · 滚轮缩放 · 单击节点看详情 · 」（10.5px）",
+          "div#scope-note.hud.on「当前 Scope 尚无长期记忆节点。星海展示的是」（11.5px）"
+        ]
+      }
+    ]
+  }
+]

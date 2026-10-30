@@ -1,0 +1,54 @@
+{
+  "name": "dsh-3d-memory-sea",
+  "version": "0.2.0",
+  "description": "3D Memory Sea V0.2 — Experience → Episode → Recall 认知记忆系统（DeepSeek/Cordis 插件）",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./client": "./dist/client/memory-sea-client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ],
+      "immediately": true
+    }
+  },
+  "files": [
+    "dist",
+    "cordis.patch.yml",
+    "README.md",
+    "IMPLEMENTATION_STATUS.md"
+  ],
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "test": "npm run build && node --test \"dist/tests/*.test.js\"",
+    "test:only": "node --test \"dist/tests/*.test.js\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "smoke": "npm run build && node scripts/smoke.mjs",
+    "verify": "node scripts/verify-stage2.mjs",
+    "verify:stage3": "npm run build && node scripts/verify-stage3.mjs",
+    "verify:stage4": "npm run build && node scripts/verify-stage4.mjs",
+    "verify:stage45": "npm run build && node scripts/verify-stage45.mjs",
+    "verify:stage46": "npm run build && node scripts/verify-stage46.mjs",
+    "verify:stage5": "npm run build && node scripts/verify-stage5.mjs",
+    "verify:stage6": "node scripts/verify-stage6.mjs",
+    "verify:stage7": "node scripts/verify-stage7.mjs",
+    "verify:review": "node scripts/verify-review-host.mjs",
+    "seed:review": "node scripts/seed-stage5b-host.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^5.9.3"
+  }
+}

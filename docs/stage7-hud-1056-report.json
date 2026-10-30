@@ -1,0 +1,29 @@
+[
+  {
+    "file": "page.png",
+    "state": null,
+    "size": "1056x794",
+    "zoom": 1,
+    "animationWaitMs": 0,
+    "issues": [],
+    "lint": [
+      {
+        "rule": "smallText",
+        "label": "正文小于 13px",
+        "count": 2,
+        "examples": [
+          "div#scope-note.hud.on「当前 Scope 尚无长期记忆节点。星海展示的是」（10px）",
+          "div#hint.hud「拖动旋转 · 滚轮缩放 · 单击节点看详情 · 」（9px）"
+        ]
+      },
+      {
+        "rule": "longMeasure",
+        "label": "正文行太长",
+        "count": 1,
+        "examples": [
+          "div#hint.hud「拖动旋转 · 滚轮缩放 · 单击节点看详情 · 」（每行约 58 字）"
+        ]
+      }
+    ]
+  }
+]

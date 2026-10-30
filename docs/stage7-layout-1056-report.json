@@ -1,0 +1,20 @@
+[
+  {
+    "file": "page.png",
+    "state": null,
+    "size": "1056x794",
+    "zoom": 1,
+    "animationWaitMs": 0,
+    "issues": [],
+    "lint": [
+      {
+        "rule": "smallText",
+        "label": "正文小于 13px",
+        "count": 1,
+        "examples": [
+          "div#scope-note.hud.on「当前 Scope 尚无长期记忆节点。星海展示的是」（11.5px）"
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,10 @@
+# 3D Memory Sea V0.2 —— profile 挂载声明
+#
+# 说明：
+#   - 这里只声明「把本插件插到 Loader 根行」，不覆盖任何已有行。
+#   - 不写 config：默认配置由 src/config.ts 解析（数据库落在 $DSH_HOME/3d-memory-sea/）。
+#     需要改 databasePath / 权重 / 采集开关时，在 profile 自己的 cordis.patch.yml 里按 id
+#     (3d-memory-sea) 覆盖 config 即可。
+- insert:
+    - id: 3d-memory-sea
+      name: dsh-3d-memory-sea
